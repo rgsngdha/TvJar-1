@@ -43,9 +43,9 @@ public class Kmys extends Spider {
     private String apiDomain = "";
     private String staticDomain = "";
 
-    private String appId = "1"; // 飞瓜 1 酷猫 5
+    private String appId = "5"; // 飞瓜 1 酷猫 5
 
-    private String device = null;
+    private String device = "8094a1cc05b48ed0dfda3d9dc0b2077f1657938026279";
 
     @Override
     public void init(Context context) {
@@ -64,9 +64,10 @@ public class Kmys extends Spider {
 
     private HashMap<String, String> getHeaders(String url) {
         HashMap<String, String> headers = new HashMap<>();
-        headers.put("versionNumber", "330");
-        headers.put("versionName", "3.3.0");
+        headers.put("versionNumber", "360");
+        headers.put("versionName", "3.6.0");
         headers.put("device", device);
+        headers.put("ed", device);
         headers.put("appId", appId);
         headers.put("platformId", "7");
         headers.put("User-Agent", "okhttp/3.14.7");
@@ -78,6 +79,7 @@ public class Kmys extends Spider {
             String url = "http://feigua2021.oss-cn-beijing.aliyuncs.com/static/config/video/" + appId + ".json";
             HashMap<String, String> headers = new HashMap<>();
             headers.put("User-Agent", "okhttp/3.14.7");
+            headers.put("ed", device);
             String json = OkHttpUtil.string(url, headers);
             try {
                 JSONObject obj = new JSONObject(json);
@@ -379,9 +381,6 @@ public class Kmys extends Spider {
 
     @Override
     public String searchContent(String key, boolean quick) {
-
-        if (quick)
-            return "";
         try {
             checkDomain();
             JSONObject result = new JSONObject();
@@ -458,7 +457,7 @@ public class Kmys extends Spider {
     }
 
     private static HashMap<String, String> kmysPlayerHeaders = null;
-    private static String signPlayerStr = "TBW1zF4p1j";
+    private static String signPlayerStr = "7aad9fdcff";
     private static final Pattern tsRex = Pattern.compile("(\\S+.ts)|(#EXT-X-KEY:\\S+\")(\\S+)(\")");
 
     static String subUrl(String url) {
@@ -473,7 +472,7 @@ public class Kmys extends Spider {
         Uri uri = Uri.parse(m3u8);
         String time = String.valueOf(System.currentTimeMillis());
         String key = Misc.MD5(subUrl(m3u8) + signPlayerStr + time, Misc.CharsetUTF8).toLowerCase();
-        String realUrl = m3u8 + "?key=" + key + "&time=" + time;
+        String realUrl = m3u8 + "?key=" + key + "&v=360&i=5&p=7&ed=8094a1cc05b48ed0dfda3d9dc0b2077f1657938026279&time=" + time;
         String m3u8Content = OkHttpUtil.string(realUrl, kmysPlayerHeaders);
         String tsUrl = m3u8.substring(0, m3u8.indexOf(uri.getLastPathSegment()));
         StringBuilder sb = new StringBuilder();
@@ -503,7 +502,7 @@ public class Kmys extends Spider {
     static Object[] getKeyContent(String key) {
         String time = String.valueOf(System.currentTimeMillis());
         String md5 = Misc.MD5(subUrl(key) + signPlayerStr + time, Misc.CharsetUTF8).toLowerCase();
-        String realUrl = key + "?key=" + md5 + "&time=" + time;
+        String realUrl = key + "?key=" + md5 + "&v=360&i=5&p=7&ed=8094a1cc05b48ed0dfda3d9dc0b2077f1657938026279&time=" + time;
         String keyContent = OkHttpUtil.string(realUrl, kmysPlayerHeaders);
         String type = "application/octet-stream";
         Object[] result = new Object[3];
@@ -517,7 +516,7 @@ public class Kmys extends Spider {
     static Object[] getTsContent(String ts) {
         String time = String.valueOf(System.currentTimeMillis());
         String key = Misc.MD5(subUrl(ts) + signPlayerStr + time, Misc.CharsetUTF8).toLowerCase();
-        String realUrl = ts + "?key=" + key + "&time=" + time;
+        String realUrl = ts + "?key=" + key + "&v=360&i=5&p=7&ed=8094a1cc05b48ed0dfda3d9dc0b2077f1657938026279&time=" + time;
         OKCallBack.OKCallBackDefault callBack = new OKCallBack.OKCallBackDefault() {
 
 
@@ -553,6 +552,7 @@ public class Kmys extends Spider {
         if (kmysPlayerHeaders == null) {
             kmysPlayerHeaders = new HashMap<>();
             kmysPlayerHeaders.put("User-Agent", "okhttp/3.14.7");
+            kmysPlayerHeaders.put("ed", "8094a1cc05b48ed0dfda3d9dc0b2077f1657938026279");
             kmysPlayerHeaders.put("Connection", "close");
         }
         if (type.equals("m3u8")) {
