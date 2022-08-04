@@ -43,7 +43,7 @@ public class Kmys extends Spider {
     private String apiDomain = "";
     private String staticDomain = "";
 
-    private String appId = "5"; // 飞瓜 1 酷猫 5
+    private String appId = "1"; // 飞瓜 1 酷猫 5
 
     private String device = null;
 
@@ -212,6 +212,7 @@ public class Kmys extends Spider {
     public String homeVideoContent() {
         try {
             checkDomain();
+            getkey();
             String url = staticDomain + "/static/" + appId + "/index/cloumn/1.json";
             String content = OkHttpUtil.string(url, getHeaders(url));
             JSONObject jsonObject = new JSONObject(content).getJSONObject("data");
@@ -242,6 +243,7 @@ public class Kmys extends Spider {
     public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend) {
         try {
             checkDomain();
+            getkey();
             JSONObject result = new JSONObject();
 
             String url = apiDomain + "/videolibrary/v2/" + appId + "/" + tid;
@@ -298,6 +300,7 @@ public class Kmys extends Spider {
     public String detailContent(List<String> ids) {
         try {
             checkDomain();
+            getkey();
             JSONObject result = new JSONObject();
             String url = staticDomain + "/static/video/detail/" + ids.get(0) + ".json";
             String content = OkHttpUtil.string(url, getHeaders(url));
@@ -330,9 +333,13 @@ public class Kmys extends Spider {
                 for (int j = 0; j < playUrls.length(); j++) {
                     JSONObject urlObj = playUrls.getJSONObject(j);
                     if (userProxy)
-                        urls.add(urlObj.getString("name") + "$" + Proxy.localProxyUrl() + "?do=kmys&type=m3u8&url=" + Base64.encodeToString(urlObj.getString("url").getBytes(Misc.CharsetUTF8), Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP) + ".." + urlObj.getInt("isParse"));
+                        urls.add(urlObj.getString("name") + "$" + Proxy.localProxyUrl() + "?do=kmys&type=m3u8&url="
+                                + Base64.encodeToString(urlObj.getString("url").getBytes(Misc.CharsetUTF8),
+                                        Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP)
+                                + ".." + urlObj.getInt("isParse"));
                     else
-                        urls.add(urlObj.getString("name") + "$" + urlObj.getString("url") + ".." + urlObj.getInt("isParse"));
+                        urls.add(urlObj.getString("name") + "$" + urlObj.getString("url") + ".."
+                                + urlObj.getInt("isParse"));
                 }
                 if (urls.isEmpty())
                     continue;
@@ -385,8 +392,10 @@ public class Kmys extends Spider {
             return "";
         try {
             checkDomain();
+            getkey();
             JSONObject result = new JSONObject();
-            String url = apiDomain + "/api/v2/index/search?pageIndex=1&wd=" + URLEncoder.encode(key) + "&limit=10&type=1";
+            String url = apiDomain + "/api/v2/index/search?pageIndex=1&wd=" + URLEncoder.encode(key)
+                    + "&limit=10&type=1";
             String content = OkHttpUtil.string(url, getHeaders(url));
             JSONArray videos = new JSONArray();
             JSONObject jsonObject = new JSONObject(content).getJSONObject("data");
@@ -430,13 +439,15 @@ public class Kmys extends Spider {
 
     String rsa(String in) {
         try {
-            RSAPublicKey pubKey = (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.decode("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3VLHgbkFN0ebMaR4e0D\n" +
-                    "z6Z2mFexPBFKGqK0tuRhzu7XOrG92nKWfnublf2p1i22UN81whBLINjMttOuqW6\n" +
-                    "fM9DCnAPTelud1zCXWYWIsv5Z19inJSG8vytJ7xg1dnfuRSRUkx11IE7bm0T/sM\n" +
-                    "0sI4GgcktQJNSizyirHtuJjUUxxQabEhFkFeqQ5r+A69KjB5QkotCc4pG5lENyT\n" +
-                    "ARHGSsfaiJthaiH0yJ/8tUlyMgJ9H6/jbQg0wlLcEUzdfe2KuCPrTRzIzx4Cjm1\n" +
-                    "JogT6JV2byvXpzAMC3O48LDiekJdVztg2Cj7E0cGrOsGs+IK6F7TWsKD/cIELTF\n" +
-                    "hLz6dExQIDAQAB", Base64.DEFAULT)));
+            RSAPublicKey pubKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
+                    .generatePublic(new X509EncodedKeySpec(
+                            Base64.decode("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3VLHgbkFN0ebMaR4e0D\n" +
+                                    "z6Z2mFexPBFKGqK0tuRhzu7XOrG92nKWfnublf2p1i22UN81whBLINjMttOuqW6\n" +
+                                    "fM9DCnAPTelud1zCXWYWIsv5Z19inJSG8vytJ7xg1dnfuRSRUkx11IE7bm0T/sM\n" +
+                                    "0sI4GgcktQJNSizyirHtuJjUUxxQabEhFkFeqQ5r+A69KjB5QkotCc4pG5lENyT\n" +
+                                    "ARHGSsfaiJthaiH0yJ/8tUlyMgJ9H6/jbQg0wlLcEUzdfe2KuCPrTRzIzx4Cjm1\n" +
+                                    "JogT6JV2byvXpzAMC3O48LDiekJdVztg2Cj7E0cGrOsGs+IK6F7TWsKD/cIELTF\n" +
+                                    "hLz6dExQIDAQAB", Base64.DEFAULT)));
             Cipher cipher = Cipher.getInstance("RSA/None/PKCS1Padding");
             cipher.init(Cipher.DECRYPT_MODE, pubKey);
             byte[] inData = Base64.decode(in, Base64.DEFAULT);
@@ -459,7 +470,7 @@ public class Kmys extends Spider {
     }
 
     private static HashMap<String, String> kmysPlayerHeaders = null;
-    private static String signPlayerStr = "3d2dc52ee3";
+    private static String signPlayerStr = "TBW1zF4p1j";
     private static final Pattern tsRex = Pattern.compile("(\\S+.ts)|(#EXT-X-KEY:\\S+\")(\\S+)(\")");
 
     static String subUrl(String url) {
@@ -483,10 +494,14 @@ public class Kmys extends Spider {
         while (matcher.find()) {
             sb.append(m3u8Content, start, matcher.start());
             if (matcher.group().contains("EXT-X-KEY")) {
-                String keyRealUrl = Proxy.localProxyUrl() + "?do=kmys&type=key&url=" + Base64.encodeToString((tsUrl + matcher.group(3)).getBytes(Misc.CharsetUTF8), Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP);
+                String keyRealUrl = Proxy.localProxyUrl() + "?do=kmys&type=key&url="
+                        + Base64.encodeToString((tsUrl + matcher.group(3)).getBytes(Misc.CharsetUTF8),
+                                Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP);
                 sb.append(matcher.group(2) + keyRealUrl + matcher.group(4));
             } else {
-                String tsRealUrl = Proxy.localProxyUrl() + "?do=kmys&type=ts&url=" + Base64.encodeToString((tsUrl + matcher.group(1)).getBytes(Misc.CharsetUTF8), Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP);
+                String tsRealUrl = Proxy.localProxyUrl() + "?do=kmys&type=ts&url="
+                        + Base64.encodeToString((tsUrl + matcher.group(1)).getBytes(Misc.CharsetUTF8),
+                                Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP);
                 sb.append(tsRealUrl);
             }
             start = matcher.end();
@@ -521,7 +536,6 @@ public class Kmys extends Spider {
         String realUrl = ts + "?key=" + key + "&time=" + time;
         OKCallBack.OKCallBackDefault callBack = new OKCallBack.OKCallBackDefault() {
 
-
             @Override
             public void onFailure(Call call, Exception e) {
 
@@ -543,6 +557,25 @@ public class Kmys extends Spider {
             result[1] = type;
             result[2] = callBack.getResult().body().byteStream();
             return result;
+        }
+        return null;
+    }
+
+    public static Object[] vod(Map<String, String> params) {
+        String type = params.get("type");
+        String url = params.get("url");
+        url = new String(Base64.decode(url, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP), Misc.CharsetUTF8);
+        if (kmysPlayerHeaders == null) {
+            kmysPlayerHeaders = new HashMap<>();
+            kmysPlayerHeaders.put("User-Agent", "okhttp/3.14.7");
+            kmysPlayerHeaders.put("Connection", "close");
+        }
+        if (type.equals("m3u8")) {
+            return getVodContent(url);
+        } else if (type.equals("key")) {
+            return getKeyContent(url);
+        } else if (type.equals("ts")) {
+            return getTsContent(url);
         }
         return null;
     }
@@ -600,24 +633,5 @@ public class Kmys extends Spider {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static Object[] vod(Map<String, String> params) {
-        String type = params.get("type");
-        String url = params.get("url");
-        url = new String(Base64.decode(url, Base64.DEFAULT | Base64.URL_SAFE | Base64.NO_WRAP), Misc.CharsetUTF8);
-        if (kmysPlayerHeaders == null) {
-            kmysPlayerHeaders = new HashMap<>();
-            kmysPlayerHeaders.put("User-Agent", "okhttp/3.14.7");
-            kmysPlayerHeaders.put("Connection", "close");
-        }
-        if (type.equals("m3u8")) {
-            return getVodContent(url);
-        } else if (type.equals("key")) {
-            return getKeyContent(url);
-        } else if (type.equals("ts")) {
-            return getTsContent(url);
-        }
-        return null;
     }
 }
