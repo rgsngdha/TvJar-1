@@ -437,7 +437,7 @@ public class Kmys extends Spider {
         return src;
     }
 
-    String rsa(String in) {
+     public static String rsa(String in) {
         try {
             RSAPublicKey pubKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
                     .generatePublic(new X509EncodedKeySpec(
@@ -620,7 +620,7 @@ public class Kmys extends Spider {
                                     String a = new String(Base64.decode(jsonObject.getString("a"), Base64.DEFAULT));
                                     String k = new String(Base64.decode(jsonObject.getString("k"), Base64.DEFAULT));
                                     String z = new String(Base64.decode(jsonObject.getString("z"), Base64.DEFAULT));
-                                    String data = decryptByPublicKey(k + z + a);
+                                    String data = rsa(k + z + a);
                                     signPlayerStr = new JSONObject(data).optString("key");
                                 } catch (JSONException e) {
                                 } catch (Exception e) {
